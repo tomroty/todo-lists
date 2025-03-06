@@ -12,7 +12,7 @@ services:
   frontend:
     image: "node:22"
     user: "node"
-    working_dir: /home/node/app
+    working_dir: /home/node/app/my-app
     environment:
       - NODE_ENV=development
       - WDS_SOCKET_PORT=0

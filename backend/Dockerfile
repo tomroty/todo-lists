@@ -11,7 +11,7 @@ COPY frontend/my-app/ ./
 RUN npm run build
 
 # --- Backend Build Stage ---
-FROM python:3.9 AS backend-builder # <-- ADD 'AS backend-builder' HERE
+FROM python:3.9 AS backend-builder
 
 WORKDIR /usr/src/app
 

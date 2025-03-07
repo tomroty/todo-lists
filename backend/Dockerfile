@@ -2,16 +2,16 @@
 FROM node:18 AS frontend-builder
 # Use a Node.js base image for building the frontend
 
-WORKDIR /app/frontend
+WORKDIR /app
+COPY frontend/my-app /app/frontend/
 
-# Copy frontend files
-COPY frontend/my-app/package*.json ./
+WORKDIR /app/frontend
 RUN npm install
-COPY frontend/my-app/ ./
 RUN npm run build
 
 # --- Backend Build Stage ---
 FROM python:3.9 AS backend-builder
+# Use a Python base image
 
 WORKDIR /usr/src/app
 

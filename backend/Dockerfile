@@ -25,10 +25,13 @@
     # Copy built frontend files
     COPY --from=frontend-builder /app/build /usr/share/nginx/html
     
-    # Corrected backend copy. Copy from the python environment.
+    # Copy necessary files from the backend stage
     COPY --from=backend-builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
     COPY --from=backend-builder /app/backend /app/backend
+    # Overriding any default entrypoint
+    ENTRYPOINT []
     
     EXPOSE 80
     
-    CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "3001"]
+    # Run uvicorn using python -m
+    CMD ["python3.9", "-m", "uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "3001"]

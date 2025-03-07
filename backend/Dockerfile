@@ -1,47 +1,31 @@
 # --- Frontend Build Stage ---
 FROM node:18 AS frontend-builder
-# Use a Node.js base image for building the frontend
 
-# Set working directory *inside* the container
-WORKDIR /app/frontend
+WORKDIR /app
 
-# Copy package.json and package-lock.json (important for caching)
-COPY frontend/my-app/package*.json ./
-
-# Install dependencies *inside* the container
+COPY ./frontend/my-app/package*.json ./
 RUN npm install
-
-# Copy the rest of the frontend app's source code
-COPY frontend/my-app/ ./
-
-# Build the React app
+COPY ./frontend/my-app /app
 RUN npm run build
 
 # --- Backend Build Stage ---
 FROM python:3.9 AS backend-builder
-# Use a Python base image
+WORKDIR /app/backend  # Still correct
 
-WORKDIR /usr/src/app
+# Correct paths relative to the REPO ROOT
+COPY ./backend/requirements.txt /app/backend/
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
-# Copy requirements.txt *from the root of your repo*
-COPY requirements.txt ./
-RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
-RUN apt-get update && apt-get install -y --no-install-recommends openssl
+# Correct path relative to the REPO ROOT
+COPY ./backend /app/backend
 
-COPY backend/ ./
-
-# --- Final Stage (Nginx) ---
+# --- Nginx Stage ---
 FROM nginx:stable-alpine AS final
 
-# Copy built frontend files
-COPY --from=frontend-builder /app/frontend/build /usr/share/nginx/html
-
-# Copy backend
-COPY --from=backend-builder /usr/src/app /usr/src/app
-
-# Copy Nginx configuration
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=frontend-builder /app/build /usr/share/nginx/html
+COPY --from=backend-builder /app/backend /app/backend
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["uvicorn", "src.server:app","--host", "0.0.0.0", "--port", "3001"]

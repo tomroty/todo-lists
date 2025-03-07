@@ -1,5 +1,7 @@
 # --- Frontend Build Stage ---
 FROM node:18 AS frontend-builder
+# Use a Node.js base image for building the frontend
+
 WORKDIR /app/frontend
 
 # Copy frontend files
@@ -9,7 +11,7 @@ COPY frontend/my-app/ ./
 RUN npm run build
 
 # --- Backend Build Stage ---
-FROM python:3.9
+FROM python:3.9 AS backend-builder # <-- ADD 'AS backend-builder' HERE
 
 WORKDIR /usr/src/app
 
@@ -26,7 +28,7 @@ FROM nginx:stable-alpine AS final
 COPY --from=frontend-builder /app/frontend/build /usr/share/nginx/html
 
 # Copy backend
-COPY --from=python-3.9 /usr/src/app /usr/src/app
+COPY --from=backend-builder /usr/src/app /usr/src/app # <-- USE THE STAGE NAME HERE
 
 # Copy Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf

@@ -28,7 +28,7 @@ FROM nginx:stable-alpine AS final
 COPY --from=frontend-builder /app/frontend/build /usr/share/nginx/html
 
 # Copy backend
-COPY --from=backend-builder /usr/src/app /usr/src/app # <-- USE THE STAGE NAME HERE
+COPY --from=backend-builder /usr/src/app /usr/src/app
 
 # Copy Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf

@@ -16,6 +16,7 @@
     RUN pip install --no-cache-dir -r /app/backend/requirements.txt
     RUN apt-get update && apt-get install -y --no-install-recommends openssl
     
+    #  COPY the backend code *BEFORE* any other operations on it
     COPY ./backend /app/backend
     
     # --- Nginx Stage ---
@@ -27,12 +28,9 @@
     # Copy built frontend files
     COPY --from=frontend-builder /app/build /usr/share/nginx/html
     
-    # Copy necessary files from the backend stage
-    COPY --from=backend-builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+    #Copy backend app
     COPY --from=backend-builder /app/backend /app/backend
     
     EXPOSE 80
     
-    # TEMPORARY DEBUGGING COMMANDS:
-    CMD ["sh", "-c", "ls -la / && ls -la /app && ls -la /app/backend && ls -la /app/backend/src && ls -la /usr/local/bin && ls -la /usr/local/lib/python3.9/site-packages && sleep infinity"]
-    # Original: CMD ["uvicorn", "src.server:app","--host", "0.0.0.0", "--port", "3001"]
+    CMD ["uvicorn", "src.server:app","--host", "0.0.0.0", "--port", "3001"]

@@ -27,10 +27,11 @@
     # Copy built frontend files
     COPY --from=frontend-builder /app/build /usr/share/nginx/html
     
-    # Copy backend files
+    # Copy necessary files from the backend stage
+    COPY --from=backend-builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
     COPY --from=backend-builder /app/backend /app/backend
     
-    # CLEAR ANY DEFAULT ENTRYPOINT
+    # Overriding any default entrypoint
     ENTRYPOINT []
     
     EXPOSE 80

@@ -16,7 +16,6 @@
     RUN pip install --no-cache-dir -r /app/backend/requirements.txt
     RUN apt-get update && apt-get install -y --no-install-recommends openssl
     
-    #  COPY the backend code *BEFORE* any other operations on it
     COPY ./backend /app/backend
     
     # --- Nginx Stage ---
@@ -28,9 +27,12 @@
     # Copy built frontend files
     COPY --from=frontend-builder /app/build /usr/share/nginx/html
     
-    #Copy backend app
+    # Copy backend files
     COPY --from=backend-builder /app/backend /app/backend
+    
+    # CLEAR ANY DEFAULT ENTRYPOINT
+    ENTRYPOINT []
     
     EXPOSE 80
     
-    CMD ["uvicorn", "src.server:app","--host", "0.0.0.0", "--port", "3001"]
+    CMD ["uvicorn", "src.server:app", "--host", "0.0.0.0", "--port", "3001"]

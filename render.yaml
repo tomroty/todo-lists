@@ -1,0 +1,38 @@
+services:
+  # Backend Service
+  - type: web
+    name: todo-lists-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+    plan: free
+
+  # Frontend Service  
+  - type: web
+    name: todo-lists-frontend
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+
+  # Nginx Service
+  - type: web
+    name: todo-lists-nginx
+    env: docker
+    dockerfilePath: ./nginx/Dockerfile
+    dockerContext: ./nginx
+    envVars:
+      - key: FRONTEND_URL
+        fromService:
+          name: todo-lists-frontend
+          type: web
+          property: url
+      - key: BACKEND_URL
+        fromService:
+          name: todo-lists-backend
+          type: web
+          property: url
+    plan: free

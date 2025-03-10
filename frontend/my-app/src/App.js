@@ -30,6 +30,14 @@ function App() {
     updateData();
   }
 
+  function handleDeleteToDoList(id) {
+    const updateData = async () => {
+      await api.delete(`/api/lists/${id}`);
+      reloadData().catch(console.error);
+    };
+    updateData();
+  }
+
   function handleSelectList(id) {
     console.log("Selecting item", id);
     setSelectedItem(id);

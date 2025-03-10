@@ -16,7 +16,14 @@ services:
     env: docker
     dockerfilePath: ./frontend/Dockerfile
     dockerContext: ./frontend
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          name: todo-lists-backend
+          type: web
+          property: url
     plan: free
+    buildCommand: cd my-app && npm install && npm run build
 
   # Nginx Service
   - type: web

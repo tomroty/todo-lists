@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "./api";
 import "./App.css";
 import ListToDoLists from "./ListTodoLists";
 import ToDoList from "./ToDoList";
@@ -13,7 +13,7 @@ function App() {
   }, []);
 
   async function reloadData() {
-    const response = await axios.get("/api/lists");
+    const response = await api.get("/api/lists");
     const data = await response.data;
     setListSummaries(data);
   }
@@ -24,15 +24,7 @@ function App() {
         name: newName,
       };
 
-      await axios.post(`/api/lists`, newListData);
-      reloadData().catch(console.error);
-    };
-    updateData();
-  }
-
-  function handleDeleteToDoList(id) {
-    const updateData = async () => {
-      await axios.delete(`/api/lists/${id}`);
+      await api.post(`/api/lists`, newListData);
       reloadData().catch(console.error);
     };
     updateData();
